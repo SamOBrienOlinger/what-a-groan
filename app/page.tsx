@@ -205,8 +205,8 @@ export default function Home() {
           <p className="eyebrow">A minor administrative exercise</p>
           <h1>Brilliant week so far?</h1>
           <p>
-            Tick the applicable inconveniences. The computer will issue a
-            finding. It has no qualifications.
+            tell the Commiserator all your woes. Your misery will be evaluated
+            accordingly. *Sympathy not guaranteed
           </p>
         </section>
 

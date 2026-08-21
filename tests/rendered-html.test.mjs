@@ -15,6 +15,9 @@ const styles = await readFile(new URL("../app/globals.css", import.meta.url), "u
 test("ships the complete game loop", () => {
   assert.match(page, /Brilliant week so far\?/);
   assert.doesNotMatch(page, /How bad was your week, objectively\?/);
+  assert.match(page, /tell the Commiserator all your woes/);
+  assert.match(page, /\*Sympathy not guaranteed/);
+  assert.doesNotMatch(page, /Tick the applicable inconveniences/);
   assert.match(page, /What happened\?/);
   assert.match(page, /How bad was it\?/);
   assert.match(page, /severity-\$\{mishap\.id\}/);
