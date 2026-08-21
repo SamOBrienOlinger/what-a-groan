@@ -30,6 +30,8 @@ test("includes eight selectable mishaps", () => {
 test("keeps the experience local and accessible", () => {
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /aria-pressed=/);
+  assert.match(page, /aria-expanded=/);
+  assert.match(page, /aria-controls=/);
   assert.match(page, /<textarea/);
   assert.match(page, /Your notes stay in this browser/);
   assert.match(page, /No login, mercifully/);
@@ -78,7 +80,11 @@ test("uses finished product metadata", () => {
   assert.doesNotMatch(`${page}\n${layout}`, /WHAT A GROAN|Starter Project|codex-preview/);
 });
 
-test("includes mobile and reduced-motion treatment", () => {
-  assert.match(styles, /@media \(max-width: 520px\)/);
+test("includes a responsive editorial design system", () => {
+  assert.match(styles, /--yellow: #f3c84b/);
+  assert.match(styles, /--blue: #175d9d/);
+  assert.match(styles, /--display: "Arial Black"/);
+  assert.match(styles, /position: sticky/);
+  assert.match(styles, /@media \(max-width: 620px\)/);
   assert.match(styles, /prefers-reduced-motion/);
 });

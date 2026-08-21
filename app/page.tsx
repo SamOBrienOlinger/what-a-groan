@@ -234,6 +234,8 @@ export default function Home() {
                     type="button"
                     onClick={() => toggleMishap(mishap.id)}
                     aria-pressed={active}
+                    aria-expanded={active}
+                    aria-controls={`assessment-${mishap.id}`}
                   >
                     <span className="check" aria-hidden="true">
                       {active ? "✓" : ""}
@@ -245,7 +247,10 @@ export default function Home() {
                   </button>
 
                   {active && (
-                    <div className="item-assessment">
+                    <div
+                      className="item-assessment"
+                      id={`assessment-${mishap.id}`}
+                    >
                       <fieldset className="item-severity">
                         <legend>How bad was it?</legend>
                         <div className="severity-options">
@@ -304,11 +309,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="decision-bar" aria-label="Issue verdict">
-          <button type="button" onClick={issueVerdict}>
-            Issue verdict
-          </button>
-        </section>
+        {!showResult && (
+          <section className="decision-bar" aria-label="Issue verdict">
+            <button type="button" onClick={issueVerdict}>
+              Issue verdict
+            </button>
+          </section>
+        )}
 
         {showResult && (
           <section className="verdict" id="verdict" aria-live="polite">
