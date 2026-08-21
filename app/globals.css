@@ -25,7 +25,8 @@ body {
 }
 
 button,
-input { font: inherit; }
+input,
+textarea { font: inherit; }
 
 button,
 a,
@@ -33,6 +34,7 @@ label { -webkit-tap-highlight-color: transparent; }
 
 button:focus-visible,
 a:focus-visible,
+textarea:focus-visible,
 input:focus-visible + span {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
@@ -143,15 +145,26 @@ h1 {
   font-size: 0.72rem;
 }
 
+.scoring-note {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  margin: -4px 0 18px;
+  max-width: 530px;
+}
+
 .mishap-list {
   border-top: 1px solid var(--line);
+}
+
+.mishap-item {
+  border-bottom: 1px solid var(--line);
 }
 
 .mishap-row {
   align-items: center;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--line);
   color: var(--ink);
   cursor: pointer;
   display: grid;
@@ -175,7 +188,7 @@ h1 {
   width: 22px;
 }
 
-.mishap-row.is-selected .check {
+.mishap-item.is-selected .check {
   background: var(--accent);
   border-color: var(--accent);
   color: white;
@@ -204,6 +217,47 @@ h1 {
   color: var(--muted);
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
+}
+
+.detail-field {
+  padding: 0 2px 18px 38px;
+}
+
+.detail-field label {
+  align-items: baseline;
+  display: flex;
+  font-size: 0.7rem;
+  font-weight: 700;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.detail-field label > small {
+  color: var(--accent);
+  font-size: 0.67rem;
+  font-weight: 400;
+}
+
+.detail-field textarea {
+  background: #faf8f2;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: block;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  min-height: 76px;
+  padding: 10px 11px;
+  resize: vertical;
+  width: 100%;
+}
+
+.detail-field textarea::placeholder { color: #969088; }
+
+.detail-field > p {
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.4;
+  margin: 7px 0 0;
 }
 
 .intensity-options {
@@ -391,6 +445,7 @@ footer p { margin: 0; }
   .intro { margin-bottom: 40px; }
   .mishap-row { min-height: 82px; }
   .mishap-copy small { max-width: 240px; }
+  .detail-field { padding-left: 0; }
   .decision-bar { align-items: stretch; }
   .decision-bar > div { align-items: flex-start; flex-direction: column; gap: 2px; }
   .decision-bar button { align-self: stretch; }

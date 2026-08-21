@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { maximumWordingPoints, negativeWordScore } from "../app/scoring.ts";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
@@ -23,7 +24,15 @@ test("keeps the experience local and accessible", () => {
   assert.match(page, /localStorage/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /aria-pressed=/);
+  assert.match(page, /<textarea/);
+  assert.match(page, /Your notes stay in this browser/);
   assert.match(page, /No login, mercifully/);
+});
+
+test("adds capped points for whole negative words", () => {
+  assert.equal(negativeWordScore("bad badminton awful broken"), 6);
+  assert.equal(negativeWordScore("A perfectly adequate afternoon"), 0);
+  assert.equal(negativeWordScore("awful ".repeat(20)), maximumWordingPoints);
 });
 
 test("uses finished product metadata", () => {

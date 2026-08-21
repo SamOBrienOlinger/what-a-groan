@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { maximumWordingPoints, negativeWordScore } from "./scoring";
 
 type Mishap = {
   id: string;
@@ -108,6 +109,7 @@ function verdictFor(score: number) {
 
 export default function Home() {
   const [selected, setSelected] = useState<string[]>([]);
+  const [details, setDetails] = useState<Record<string, string>>({});
   const [multiplier, setMultiplier] = useState(1);
   const [showResult, setShowResult] = useState(false);
   const [bestScore, setBestScore] = useState(0);
@@ -122,14 +124,20 @@ export default function Home() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const baseScore = useMemo(
+  const evidenceScore = useMemo(
     () =>
       mishaps
         .filter((mishap) => selected.includes(mishap.id))
-        .reduce((total, mishap) => total + mishap.points, 0),
-    [selected],
+        .reduce(
+          (total, mishap) =>
+            total +
+            mishap.points +
+            negativeWordScore(details[mishap.id] ?? ""),
+          0,
+        ),
+    [details, selected],
   );
-  const score = Math.round(baseScore * multiplier);
+  const score = Math.round(evidenceScore * multiplier);
   const verdict = verdictFor(score);
 
   function toggleMishap(id: string) {
@@ -157,6 +165,7 @@ export default function Home() {
 
   function resetGame() {
     setSelected([]);
+    setDetails({});
     setMultiplier(1);
     setShowResult(false);
     setShareLabel("Share finding");
@@ -202,27 +211,68 @@ export default function Home() {
             <h2 id="events-heading">What happened?</h2>
             <span>{selected.length} selected</span>
           </div>
+          <p className="scoring-note">
+            Add details if required. Gloomy vocabulary attracts a modest
+            surcharge, assessed locally by the computer.
+          </p>
 
           <div className="mishap-list">
             {mishaps.map((mishap) => {
               const active = selected.includes(mishap.id);
+              const wordingPoints = negativeWordScore(details[mishap.id] ?? "");
               return (
-                <button
-                  className={`mishap-row${active ? " is-selected" : ""}`}
-                  type="button"
+                <div
+                  className={`mishap-item${active ? " is-selected" : ""}`}
                   key={mishap.id}
-                  onClick={() => toggleMishap(mishap.id)}
-                  aria-pressed={active}
                 >
-                  <span className="check" aria-hidden="true">
-                    {active ? "✓" : ""}
-                  </span>
-                  <span className="mishap-copy">
-                    <strong>{mishap.title}</strong>
-                    <small>{mishap.detail}</small>
-                  </span>
-                  <span className="points">+{mishap.points}</span>
-                </button>
+                  <button
+                    className="mishap-row"
+                    type="button"
+                    onClick={() => toggleMishap(mishap.id)}
+                    aria-pressed={active}
+                  >
+                    <span className="check" aria-hidden="true">
+                      {active ? "✓" : ""}
+                    </span>
+                    <span className="mishap-copy">
+                      <strong>{mishap.title}</strong>
+                      <small>{mishap.detail}</small>
+                    </span>
+                    <span className="points">+{mishap.points}</span>
+                  </button>
+
+                  {active && (
+                    <div className="detail-field">
+                      <label htmlFor={`detail-${mishap.id}`}>
+                        <span>Optional details</span>
+                        <small aria-live="polite">
+                          {wordingPoints > 0
+                            ? `Wording +${wordingPoints}`
+                            : "No wording points"}
+                        </small>
+                      </label>
+                      <textarea
+                        id={`detail-${mishap.id}`}
+                        value={details[mishap.id] ?? ""}
+                        onChange={(event) => {
+                          setDetails((current) => ({
+                            ...current,
+                            [mishap.id]: event.target.value,
+                          }));
+                          setShowResult(false);
+                        }}
+                        rows={2}
+                        maxLength={220}
+                        placeholder="What happened, in your own unnecessarily bleak words?"
+                        aria-describedby={`detail-help-${mishap.id}`}
+                      />
+                      <p id={`detail-help-${mishap.id}`}>
+                        Negative words add up to {maximumWordingPoints} points.
+                        Your notes stay in this browser.
+                      </p>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
