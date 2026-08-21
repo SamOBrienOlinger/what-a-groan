@@ -1,0 +1,95 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+import {
+  maximumWordingPoints,
+  mishapScore,
+  negativeWordScore,
+  normaliseScore,
+} from "../app/scoring.ts";
+
+const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+test("ships the complete game loop", () => {
+  assert.match(page, /Brilliant week so far\?/);
+  assert.doesNotMatch(page, /How bad was your week, objectively\?/);
+  assert.match(page, /tell the Commiserator all your woes/);
+  assert.match(page, /\*Sympathy not guaranteed/);
+  assert.doesNotMatch(page, /Tick the applicable inconveniences/);
+  assert.match(page, /What happened\?/);
+  assert.match(page, /How bad was it\?/);
+  assert.match(page, /severity-\$\{mishap\.id\}/);
+  assert.doesNotMatch(page, /name="intensity"/);
+  assert.match(page, /Issue verdict/);
+  assert.match(page, /Share finding/);
+});
+
+test("includes eight selectable mishaps", () => {
+  const ids = [...page.matchAll(/id: "([a-z]+)"/g)].map((match) => match[1]);
+  assert.equal(ids.length, 8);
+  assert.equal(new Set(ids).size, 8);
+});
+
+test("keeps the experience local and accessible", () => {
+  assert.match(page, /aria-live="polite"/);
+  assert.match(page, /aria-pressed=/);
+  assert.match(page, /aria-expanded=/);
+  assert.match(page, /aria-controls=/);
+  assert.match(page, /<textarea/);
+  assert.match(page, /Your notes stay in this browser/);
+  assert.match(page, /No login, mercifully/);
+});
+
+test("adds capped points for whole negative words", () => {
+  assert.equal(negativeWordScore("bad badminton awful broken"), 6);
+  assert.equal(negativeWordScore("A perfectly adequate afternoon"), 0);
+  assert.equal(negativeWordScore("awful ".repeat(20)), maximumWordingPoints);
+});
+
+test("scores each mishap with its own severity", () => {
+  assert.match(page, /A real pain/);
+  assert.match(page, /Total nightmare/);
+  assert.match(page, /It broke me/);
+  assert.equal(mishapScore(8, "", 1), 8);
+  assert.equal(mishapScore(8, "awful", 1.5), 17);
+  assert.equal(mishapScore(8, "awful", 2), 22);
+});
+
+test("keeps scoring private until the final result", () => {
+  assert.doesNotMatch(page, /className="points"/);
+  assert.doesNotMatch(page, /Wording \+|No wording points|Current reading/);
+  assert.doesNotMatch(page, /×\{option\.value\}|groan points|Best on this device/);
+  assert.match(page, /out of \{maximumScore\}/);
+  assert.match(page, /const maximumScore = 100/);
+  assert.match(page, /normaliseScore\(rawScore, maximumRawScore\)/);
+  assert.equal(normaliseScore(0, 302), 0);
+  assert.equal(normaliseScore(151, 302), 50);
+  assert.equal(normaliseScore(302, 302), 100);
+  assert.equal(normaliseScore(400, 302), 100);
+});
+
+test("delivers increasingly grudging verdicts", () => {
+  assert.match(page, /Suck it up\. Come back when something worth actually being annoyed about/);
+  assert.match(page, /Pull yourself together/);
+  assert.match(page, /Annoying\. Not historic\./);
+  assert.match(page, /Try not to turn it into a memoir\./);
+  assert.match(page, /At last, an actual problem\./);
+  assert.doesNotMatch(page, /You may mention it once, preferably without a preamble/);
+});
+
+test("uses finished product metadata", () => {
+  assert.match(page, /DON&apos;T EVEN TALK TO ME/);
+  assert.match(layout, /DON'T EVEN TALK TO ME/);
+  assert.doesNotMatch(`${page}\n${layout}`, /WHAT A GROAN|Starter Project|codex-preview/);
+});
+
+test("includes a responsive editorial design system", () => {
+  assert.match(styles, /--yellow: #f3c84b/);
+  assert.match(styles, /--blue: #175d9d/);
+  assert.match(styles, /--display: "Arial Black"/);
+  assert.match(styles, /position: sticky/);
+  assert.match(styles, /@media \(max-width: 620px\)/);
+  assert.match(styles, /prefers-reduced-motion/);
+});
