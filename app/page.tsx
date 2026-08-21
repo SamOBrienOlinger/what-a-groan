@@ -1,7 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { maximumWordingPoints, mishapScore } from "./scoring";
+import {
+  maximumWordingPoints,
+  mishapScore,
+  normaliseScore,
+} from "./scoring";
 
 type Mishap = {
   id: string;
@@ -67,7 +71,7 @@ const multipliers = [
   { label: "It broke me", value: 2 },
 ];
 
-const maximumScore = mishaps.reduce(
+const maximumRawScore = mishaps.reduce(
   (total, mishap) =>
     total +
     Math.round(
@@ -76,6 +80,7 @@ const maximumScore = mishaps.reduce(
     ),
   0,
 );
+const maximumScore = 100;
 
 function verdictFor(score: number) {
   if (score === 0) {
@@ -124,7 +129,7 @@ export default function Home() {
   const [showResult, setShowResult] = useState(false);
   const [shareLabel, setShareLabel] = useState("Share finding");
 
-  const score = useMemo(
+  const rawScore = useMemo(
     () =>
       mishaps
         .filter((mishap) => selected.includes(mishap.id))
@@ -140,6 +145,7 @@ export default function Home() {
         ),
     [details, selected, severities],
   );
+  const score = normaliseScore(rawScore, maximumRawScore);
   const verdict = verdictFor(score);
 
   function toggleMishap(id: string) {
@@ -171,11 +177,11 @@ export default function Home() {
   }
 
   async function shareResult() {
-    const text = `My week scored ${score} out of ${maximumScore} on WHAT A GROAN!: ${verdict.title}`;
+    const text = `My week scored ${score} out of ${maximumScore} on DON'T EVEN TALK TO ME: ${verdict.title}`;
 
     try {
       if (navigator.share) {
-        await navigator.share({ title: "WHAT A GROAN!", text });
+        await navigator.share({ title: "DON'T EVEN TALK TO ME", text });
       } else {
         await navigator.clipboard.writeText(text);
         setShareLabel("Copied. Very modern.");
@@ -188,8 +194,8 @@ export default function Home() {
   return (
     <main>
       <header className="site-header">
-        <a className="wordmark" href="#top" aria-label="WHAT A GROAN! home">
-          WHAT A GROAN!
+        <a className="wordmark" href="#top" aria-label="Don't Even Talk to Me home">
+          DON&apos;T EVEN TALK TO ME
         </a>
         <span>No login, mercifully.</span>
       </header>
@@ -323,7 +329,7 @@ export default function Home() {
         )}
 
         <footer>
-          <span>WHAT A GROAN!</span>
+          <span>DON&apos;T EVEN TALK TO ME</span>
           <p>For ordinary bad luck only. Serious matters remain serious.</p>
         </footer>
       </div>

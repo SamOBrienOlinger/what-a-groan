@@ -5,6 +5,7 @@ import {
   maximumWordingPoints,
   mishapScore,
   negativeWordScore,
+  normaliseScore,
 } from "../app/scoring.ts";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
@@ -54,12 +55,18 @@ test("keeps scoring private until the final result", () => {
   assert.doesNotMatch(page, /Wording \+|No wording points|Current reading/);
   assert.doesNotMatch(page, /×\{option\.value\}|groan points|Best on this device/);
   assert.match(page, /out of \{maximumScore\}/);
-  assert.match(page, /const maximumScore = mishaps\.reduce/);
+  assert.match(page, /const maximumScore = 100/);
+  assert.match(page, /normaliseScore\(rawScore, maximumRawScore\)/);
+  assert.equal(normaliseScore(0, 302), 0);
+  assert.equal(normaliseScore(151, 302), 50);
+  assert.equal(normaliseScore(302, 302), 100);
+  assert.equal(normaliseScore(400, 302), 100);
 });
 
 test("uses finished product metadata", () => {
-  assert.match(layout, /WHAT A GROAN!/);
-  assert.doesNotMatch(layout, /Starter Project|codex-preview/);
+  assert.match(page, /DON&apos;T EVEN TALK TO ME/);
+  assert.match(layout, /DON'T EVEN TALK TO ME/);
+  assert.doesNotMatch(`${page}\n${layout}`, /WHAT A GROAN|Starter Project|codex-preview/);
 });
 
 test("includes mobile and reduced-motion treatment", () => {

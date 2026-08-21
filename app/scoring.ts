@@ -55,3 +55,8 @@ export function mishapScore(
 ) {
   return Math.round((basePoints + negativeWordScore(detail)) * multiplier);
 }
+
+export function normaliseScore(score: number, maximumScore: number) {
+  if (maximumScore <= 0) return 0;
+  return Math.min(100, Math.max(0, Math.round((score / maximumScore) * 100)));
+}

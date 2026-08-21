@@ -1,6 +1,6 @@
-# WHAT A GROAN!
+# DON'T EVEN TALK TO ME
 
-A mobile-first dark-comedy game that turns ordinary bad luck into a gloriously unscientific “groan score”.
+A mobile-first dark-comedy game that turns ordinary bad luck into a gloriously unscientific score out of 100.
 
 ## Current release workflow
 
@@ -25,7 +25,7 @@ npm run lint
 npm test
 ```
 
-The production build outputs a Cloudflare-compatible application in `dist/`. The game stores only the player’s personal best in local browser storage; it has no account, analytics or server-side player data.
+The production build outputs a Cloudflare-compatible application in `dist/`. The game has no account, analytics or server-side player data.
 
 ## Preview deployment
 
