@@ -42,6 +42,9 @@ test("adds capped points for whole negative words", () => {
 });
 
 test("scores each mishap with its own severity", () => {
+  assert.match(page, /A real pain/);
+  assert.match(page, /Total nightmare/);
+  assert.match(page, /It broke me/);
   assert.equal(mishapScore(8, "", 1), 8);
   assert.equal(mishapScore(8, "awful", 1.5), 17);
   assert.equal(mishapScore(8, "awful", 2), 22);

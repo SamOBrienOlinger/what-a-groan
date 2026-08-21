@@ -66,9 +66,9 @@ const mishaps: Mishap[] = [
 ];
 
 const multipliers = [
-  { label: "As recorded", value: 1 },
-  { label: "Was a bit much", value: 1.5 },
-  { label: "Entirely the point", value: 2 },
+  { label: "A real pain", value: 1 },
+  { label: "Total nightmare", value: 1.5 },
+  { label: "It broke me", value: 2 },
 ];
 
 function verdictFor(score: number) {
