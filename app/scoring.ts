@@ -47,3 +47,11 @@ export function negativeWordScore(text: string) {
 
   return Math.min(score, maximumWordingPoints);
 }
+
+export function mishapScore(
+  basePoints: number,
+  detail: string,
+  multiplier: number,
+) {
+  return Math.round((basePoints + negativeWordScore(detail)) * multiplier);
+}

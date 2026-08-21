@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { maximumWordingPoints, negativeWordScore } from "../app/scoring.ts";
+import {
+  maximumWordingPoints,
+  mishapScore,
+  negativeWordScore,
+} from "../app/scoring.ts";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
@@ -10,6 +14,8 @@ const styles = await readFile(new URL("../app/globals.css", import.meta.url), "u
 test("ships the complete game loop", () => {
   assert.match(page, /What happened\?/);
   assert.match(page, /How bad was it\?/);
+  assert.match(page, /severity-\$\{mishap\.id\}/);
+  assert.doesNotMatch(page, /name="intensity"/);
   assert.match(page, /Issue verdict/);
   assert.match(page, /Share finding/);
 });
@@ -33,6 +39,12 @@ test("adds capped points for whole negative words", () => {
   assert.equal(negativeWordScore("bad badminton awful broken"), 6);
   assert.equal(negativeWordScore("A perfectly adequate afternoon"), 0);
   assert.equal(negativeWordScore("awful ".repeat(20)), maximumWordingPoints);
+});
+
+test("scores each mishap with its own severity", () => {
+  assert.equal(mishapScore(8, "", 1), 8);
+  assert.equal(mishapScore(8, "awful", 1.5), 17);
+  assert.equal(mishapScore(8, "awful", 2), 22);
 });
 
 test("uses finished product metadata", () => {

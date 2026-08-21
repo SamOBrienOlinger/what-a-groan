@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { maximumWordingPoints, negativeWordScore } from "./scoring";
+import {
+  maximumWordingPoints,
+  mishapScore,
+  negativeWordScore,
+} from "./scoring";
 
 type Mishap = {
   id: string;
@@ -62,9 +66,9 @@ const mishaps: Mishap[] = [
 ];
 
 const multipliers = [
-  { label: "Technically happened", value: 1 },
+  { label: "As recorded", value: 1 },
   { label: "Was a bit much", value: 1.5 },
-  { label: "Became the week", value: 2 },
+  { label: "Entirely the point", value: 2 },
 ];
 
 function verdictFor(score: number) {
@@ -110,7 +114,7 @@ function verdictFor(score: number) {
 export default function Home() {
   const [selected, setSelected] = useState<string[]>([]);
   const [details, setDetails] = useState<Record<string, string>>({});
-  const [multiplier, setMultiplier] = useState(1);
+  const [severities, setSeverities] = useState<Record<string, number>>({});
   const [showResult, setShowResult] = useState(false);
   const [bestScore, setBestScore] = useState(0);
   const [shareLabel, setShareLabel] = useState("Share finding");
@@ -124,20 +128,22 @@ export default function Home() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const evidenceScore = useMemo(
+  const score = useMemo(
     () =>
       mishaps
         .filter((mishap) => selected.includes(mishap.id))
         .reduce(
           (total, mishap) =>
             total +
-            mishap.points +
-            negativeWordScore(details[mishap.id] ?? ""),
+            mishapScore(
+              mishap.points,
+              details[mishap.id] ?? "",
+              severities[mishap.id] ?? 1,
+            ),
           0,
         ),
-    [details, selected],
+    [details, selected, severities],
   );
-  const score = Math.round(evidenceScore * multiplier);
   const verdict = verdictFor(score);
 
   function toggleMishap(id: string) {
@@ -166,7 +172,7 @@ export default function Home() {
   function resetGame() {
     setSelected([]);
     setDetails({});
-    setMultiplier(1);
+    setSeverities({});
     setShowResult(false);
     setShareLabel("Share finding");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -212,14 +218,20 @@ export default function Home() {
             <span>{selected.length} selected</span>
           </div>
           <p className="scoring-note">
-            Add details if required. Gloomy vocabulary attracts a modest
-            surcharge, assessed locally by the computer.
+            Assess each selected inconvenience separately. Details are optional;
+            gloomy vocabulary attracts a modest local surcharge.
           </p>
 
           <div className="mishap-list">
             {mishaps.map((mishap) => {
               const active = selected.includes(mishap.id);
               const wordingPoints = negativeWordScore(details[mishap.id] ?? "");
+              const severity = severities[mishap.id] ?? 1;
+              const currentItemScore = mishapScore(
+                mishap.points,
+                details[mishap.id] ?? "",
+                severity,
+              );
               return (
                 <div
                   className={`mishap-item${active ? " is-selected" : ""}`}
@@ -238,73 +250,76 @@ export default function Home() {
                       <strong>{mishap.title}</strong>
                       <small>{mishap.detail}</small>
                     </span>
-                    <span className="points">+{mishap.points}</span>
+                    <span className="points">
+                      +{active ? currentItemScore : mishap.points}
+                    </span>
                   </button>
 
                   {active && (
-                    <div className="detail-field">
-                      <label htmlFor={`detail-${mishap.id}`}>
-                        <span>Optional details</span>
-                        <small aria-live="polite">
-                          {wordingPoints > 0
-                            ? `Wording +${wordingPoints}`
-                            : "No wording points"}
-                        </small>
-                      </label>
-                      <textarea
-                        id={`detail-${mishap.id}`}
-                        value={details[mishap.id] ?? ""}
-                        onChange={(event) => {
-                          setDetails((current) => ({
-                            ...current,
-                            [mishap.id]: event.target.value,
-                          }));
-                          setShowResult(false);
-                        }}
-                        rows={2}
-                        maxLength={220}
-                        placeholder="What happened, in your own unnecessarily bleak words?"
-                        aria-describedby={`detail-help-${mishap.id}`}
-                      />
-                      <p id={`detail-help-${mishap.id}`}>
-                        Negative words add up to {maximumWordingPoints} points.
-                        Your notes stay in this browser.
-                      </p>
+                    <div className="item-assessment">
+                      <fieldset className="item-severity">
+                        <legend>How bad was it?</legend>
+                        <div className="severity-options">
+                          {multipliers.map((option) => (
+                            <label
+                              className={severity === option.value ? "is-selected" : ""}
+                              key={option.value}
+                            >
+                              <input
+                                type="radio"
+                                name={`severity-${mishap.id}`}
+                                value={option.value}
+                                checked={severity === option.value}
+                                onChange={() => {
+                                  setSeverities((current) => ({
+                                    ...current,
+                                    [mishap.id]: option.value,
+                                  }));
+                                  setShowResult(false);
+                                }}
+                              />
+                              <span>{option.label}</span>
+                              <small>×{option.value}</small>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      <div className="detail-field">
+                        <label htmlFor={`detail-${mishap.id}`}>
+                          <span>Optional details</span>
+                          <small aria-live="polite">
+                            {wordingPoints > 0
+                              ? `Wording +${wordingPoints}`
+                              : "No wording points"}
+                          </small>
+                        </label>
+                        <textarea
+                          id={`detail-${mishap.id}`}
+                          value={details[mishap.id] ?? ""}
+                          onChange={(event) => {
+                            setDetails((current) => ({
+                              ...current,
+                              [mishap.id]: event.target.value,
+                            }));
+                            setShowResult(false);
+                          }}
+                          rows={2}
+                          maxLength={220}
+                          placeholder="What happened, in your own unnecessarily bleak words?"
+                          aria-describedby={`detail-help-${mishap.id}`}
+                        />
+                        <p id={`detail-help-${mishap.id}`}>
+                          Negative words add up to {maximumWordingPoints} points.
+                          Your notes stay in this browser.
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-        </section>
-
-        <section className="panel" aria-labelledby="severity-heading">
-          <div className="section-heading">
-            <h2 id="severity-heading">How bad was it?</h2>
-          </div>
-
-          <fieldset className="intensity-options">
-            <legend className="sr-only">Choose an intensity</legend>
-            {multipliers.map((option) => (
-              <label
-                className={multiplier === option.value ? "is-selected" : ""}
-                key={option.value}
-              >
-                <input
-                  type="radio"
-                  name="intensity"
-                  value={option.value}
-                  checked={multiplier === option.value}
-                  onChange={() => {
-                    setMultiplier(option.value);
-                    setShowResult(false);
-                  }}
-                />
-                <span>{option.label}</span>
-                <small>×{option.value}</small>
-              </label>
-            ))}
-          </fieldset>
         </section>
 
         <section className="decision-bar" aria-label="Current score">
