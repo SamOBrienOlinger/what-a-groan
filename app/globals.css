@@ -213,12 +213,6 @@ h1 {
   margin-top: 4px;
 }
 
-.points {
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-}
-
 .item-assessment { padding-bottom: 18px; }
 
 .item-severity {
@@ -240,7 +234,7 @@ h1 {
 }
 
 .severity-options label {
-  align-items: flex-start;
+  align-items: center;
   border: 1px solid var(--line);
   cursor: pointer;
   display: flex;
@@ -268,12 +262,6 @@ h1 {
   line-height: 1.25;
 }
 
-.severity-options small {
-  color: var(--muted);
-  font-size: 0.64rem;
-  margin-top: 4px;
-}
-
 .detail-field { padding: 0 2px 0 38px; }
 
 .detail-field label {
@@ -281,14 +269,7 @@ h1 {
   display: flex;
   font-size: 0.7rem;
   font-weight: 700;
-  justify-content: space-between;
   margin-bottom: 7px;
-}
-
-.detail-field label > small {
-  color: var(--accent);
-  font-size: 0.67rem;
-  font-weight: 400;
 }
 
 .detail-field textarea {
@@ -314,31 +295,7 @@ h1 {
 }
 
 .decision-bar {
-  align-items: center;
-  background: var(--ink);
-  color: white;
-  display: flex;
-  justify-content: space-between;
   margin: 22px 0;
-  padding: 16px 18px;
-}
-
-.decision-bar > div {
-  align-items: center;
-  display: flex;
-  gap: 14px;
-}
-
-.decision-bar span {
-  color: #c9c5bd;
-  font-size: 0.68rem;
-}
-
-.decision-bar strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.9rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
 }
 
 .decision-bar button,
@@ -350,6 +307,11 @@ h1 {
   font-size: 0.75rem;
   min-height: 44px;
   padding: 0 16px;
+}
+
+.decision-bar button {
+  min-height: 52px;
+  width: 100%;
 }
 
 .decision-bar button:hover,
@@ -450,9 +412,6 @@ footer p { margin: 0; }
   .mishap-copy small { max-width: 240px; }
   .item-severity,
   .detail-field { padding-left: 0; }
-  .decision-bar { align-items: stretch; }
-  .decision-bar > div { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .decision-bar button { align-self: stretch; }
   footer { align-items: flex-start; flex-direction: column; gap: 8px; }
 }
 

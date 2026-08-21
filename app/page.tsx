@@ -1,11 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import {
-  maximumWordingPoints,
-  mishapScore,
-  negativeWordScore,
-} from "./scoring";
+import { useMemo, useState } from "react";
+import { maximumWordingPoints, mishapScore } from "./scoring";
 
 type Mishap = {
   id: string;
@@ -71,6 +67,16 @@ const multipliers = [
   { label: "It broke me", value: 2 },
 ];
 
+const maximumScore = mishaps.reduce(
+  (total, mishap) =>
+    total +
+    Math.round(
+      (mishap.points + maximumWordingPoints) *
+        Math.max(...multipliers.map((option) => option.value)),
+    ),
+  0,
+);
+
 function verdictFor(score: number) {
   if (score === 0) {
     return {
@@ -116,17 +122,7 @@ export default function Home() {
   const [details, setDetails] = useState<Record<string, string>>({});
   const [severities, setSeverities] = useState<Record<string, number>>({});
   const [showResult, setShowResult] = useState(false);
-  const [bestScore, setBestScore] = useState(0);
   const [shareLabel, setShareLabel] = useState("Share finding");
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const saved = window.localStorage.getItem("what-a-groan-best");
-      if (saved) setBestScore(Number(saved) || 0);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
 
   const score = useMemo(
     () =>
@@ -157,10 +153,6 @@ export default function Home() {
 
   function issueVerdict() {
     setShowResult(true);
-    if (score > bestScore) {
-      setBestScore(score);
-      window.localStorage.setItem("what-a-groan-best", String(score));
-    }
     window.setTimeout(() => {
       document.getElementById("verdict")?.scrollIntoView({
         behavior: "smooth",
@@ -179,7 +171,7 @@ export default function Home() {
   }
 
   async function shareResult() {
-    const text = `My week received ${score} points from WHAT A GROAN!: ${verdict.title}`;
+    const text = `My week scored ${score} out of ${maximumScore} on WHAT A GROAN!: ${verdict.title}`;
 
     try {
       if (navigator.share) {
@@ -219,19 +211,13 @@ export default function Home() {
           </div>
           <p className="scoring-note">
             Assess each selected inconvenience separately. Details are optional;
-            gloomy vocabulary attracts a modest local surcharge.
+            the computer will consider them with grave concern.
           </p>
 
           <div className="mishap-list">
             {mishaps.map((mishap) => {
               const active = selected.includes(mishap.id);
-              const wordingPoints = negativeWordScore(details[mishap.id] ?? "");
               const severity = severities[mishap.id] ?? 1;
-              const currentItemScore = mishapScore(
-                mishap.points,
-                details[mishap.id] ?? "",
-                severity,
-              );
               return (
                 <div
                   className={`mishap-item${active ? " is-selected" : ""}`}
@@ -249,9 +235,6 @@ export default function Home() {
                     <span className="mishap-copy">
                       <strong>{mishap.title}</strong>
                       <small>{mishap.detail}</small>
-                    </span>
-                    <span className="points">
-                      +{active ? currentItemScore : mishap.points}
                     </span>
                   </button>
 
@@ -279,7 +262,6 @@ export default function Home() {
                                 }}
                               />
                               <span>{option.label}</span>
-                              <small>×{option.value}</small>
                             </label>
                           ))}
                         </div>
@@ -288,11 +270,6 @@ export default function Home() {
                       <div className="detail-field">
                         <label htmlFor={`detail-${mishap.id}`}>
                           <span>Optional details</span>
-                          <small aria-live="polite">
-                            {wordingPoints > 0
-                              ? `Wording +${wordingPoints}`
-                              : "No wording points"}
-                          </small>
                         </label>
                         <textarea
                           id={`detail-${mishap.id}`}
@@ -310,8 +287,7 @@ export default function Home() {
                           aria-describedby={`detail-help-${mishap.id}`}
                         />
                         <p id={`detail-help-${mishap.id}`}>
-                          Negative words add up to {maximumWordingPoints} points.
-                          Your notes stay in this browser.
+                          The computer will consider this quietly. Your notes stay in this browser.
                         </p>
                       </div>
                     </div>
@@ -322,11 +298,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="decision-bar" aria-label="Current score">
-          <div>
-            <span>Current reading</span>
-            <strong aria-live="polite">{score}</strong>
-          </div>
+        <section className="decision-bar" aria-label="Issue verdict">
           <button type="button" onClick={issueVerdict}>
             Issue verdict
           </button>
@@ -337,7 +309,7 @@ export default function Home() {
             <p className="verdict-label">{verdict.label}</p>
             <div className="verdict-score">
               <strong>{score}</strong>
-              <span>groan points</span>
+              <span>out of {maximumScore}</span>
             </div>
             <h2>{verdict.title}</h2>
             <p>{verdict.copy}</p>
@@ -347,7 +319,6 @@ export default function Home() {
                 Start again
               </button>
             </div>
-            <small>Best on this device: {Math.max(bestScore, score)}. A proud record.</small>
           </section>
         )}
 

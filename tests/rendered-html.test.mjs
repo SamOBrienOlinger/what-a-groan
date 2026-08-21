@@ -27,7 +27,6 @@ test("includes eight selectable mishaps", () => {
 });
 
 test("keeps the experience local and accessible", () => {
-  assert.match(page, /localStorage/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /aria-pressed=/);
   assert.match(page, /<textarea/);
@@ -48,6 +47,14 @@ test("scores each mishap with its own severity", () => {
   assert.equal(mishapScore(8, "", 1), 8);
   assert.equal(mishapScore(8, "awful", 1.5), 17);
   assert.equal(mishapScore(8, "awful", 2), 22);
+});
+
+test("keeps scoring private until the final result", () => {
+  assert.doesNotMatch(page, /className="points"/);
+  assert.doesNotMatch(page, /Wording \+|No wording points|Current reading/);
+  assert.doesNotMatch(page, /×\{option\.value\}|groan points|Best on this device/);
+  assert.match(page, /out of \{maximumScore\}/);
+  assert.match(page, /const maximumScore = mishaps\.reduce/);
 });
 
 test("uses finished product metadata", () => {
