@@ -3,12 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://what-a-groan.samobo.chatgpt.site"),
-  title: "WHAT A GROAN! — The Misery Index",
+  title: "WHAT A GROAN! — An Objective Finding",
   description:
-    "Turn life's minor catastrophes into a scientifically questionable groan score.",
+    "Submit the week's inconveniences. Receive a finding from a computer with no qualifications.",
   openGraph: {
     title: "WHAT A GROAN!",
-    description: "Life's rough. Your score can prove it.",
+    description: "Your week has been reviewed. Findings are available.",
     type: "website",
     url: "https://what-a-groan.samobo.chatgpt.site",
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "WHAT A GROAN!" }],
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "WHAT A GROAN!",
-    description: "Life's rough. Your score can prove it.",
+    description: "Your week has been reviewed. Findings are available.",
     images: ["/og.jpg"],
   },
   icons: {

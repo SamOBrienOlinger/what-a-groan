@@ -6,11 +6,11 @@ const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8")
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
 const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-test("ships the complete three-step game loop", () => {
+test("ships the complete game loop", () => {
   assert.match(page, /What happened\?/);
   assert.match(page, /How bad was it\?/);
-  assert.match(page, /Judge my week/);
-  assert.match(page, /Official result/);
+  assert.match(page, /Issue verdict/);
+  assert.match(page, /Share finding/);
 });
 
 test("includes eight selectable mishaps", () => {
@@ -23,7 +23,7 @@ test("keeps the experience local and accessible", () => {
   assert.match(page, /localStorage/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /aria-pressed=/);
-  assert.match(page, /No account\. No tracking/);
+  assert.match(page, /No login, mercifully/);
 });
 
 test("uses finished product metadata", () => {
@@ -32,6 +32,6 @@ test("uses finished product metadata", () => {
 });
 
 test("includes mobile and reduced-motion treatment", () => {
-  assert.match(styles, /@media \(max-width: 420px\)/);
+  assert.match(styles, /@media \(max-width: 520px\)/);
   assert.match(styles, /prefers-reduced-motion/);
 });
