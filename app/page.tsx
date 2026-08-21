@@ -203,7 +203,7 @@ export default function Home() {
       <div className="page-shell" id="top">
         <section className="intro">
           <p className="eyebrow">A minor administrative exercise</p>
-          <h1>How bad was your week, objectively?</h1>
+          <h1>Brilliant week so far?</h1>
           <p>
             Tick the applicable inconveniences. The computer will issue a
             finding. It has no qualifications.
