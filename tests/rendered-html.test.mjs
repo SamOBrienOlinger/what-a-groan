@@ -63,6 +63,15 @@ test("keeps scoring private until the final result", () => {
   assert.equal(normaliseScore(400, 302), 100);
 });
 
+test("delivers increasingly grudging verdicts", () => {
+  assert.match(page, /Suck it up\. Come back when something worth actually being annoyed about/);
+  assert.match(page, /Pull yourself together/);
+  assert.match(page, /Annoying\. Not historic\./);
+  assert.match(page, /Try not to turn it into a memoir\./);
+  assert.match(page, /At last, an actual problem\./);
+  assert.doesNotMatch(page, /You may mention it once, preferably without a preamble/);
+});
+
 test("uses finished product metadata", () => {
   assert.match(page, /DON&apos;T EVEN TALK TO ME/);
   assert.match(layout, /DON'T EVEN TALK TO ME/);

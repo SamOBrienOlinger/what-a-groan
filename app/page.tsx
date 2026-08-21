@@ -85,40 +85,40 @@ const maximumScore = 100;
 function verdictFor(score: number) {
   if (score === 0) {
     return {
-      label: "No case to answer",
-      title: "Nothing much happened.",
-      copy: "This is irritating for people who came prepared.",
+      label: "Complaint rejected",
+      title: "You appear to have had a day.",
+      copy: "Suck it up. Come back when something worth actually being annoyed about has happened.",
     };
   }
 
   if (score < 16) {
     return {
-      label: "Minor nuisance",
-      title: "A manageable inconvenience.",
-      copy: "You may mention it once, preferably without a preamble.",
+      label: "Sympathy unavailable",
+      title: "You will somehow survive this.",
+      copy: "Pull yourself together and return when the inconvenience has developed into an actual problem.",
     };
   }
 
   if (score < 31) {
     return {
-      label: "Complaint approved",
-      title: "A proper week.",
-      copy: "Your complaint has merit. Tea remains the recommended intervention.",
+      label: "Limited concern",
+      title: "Annoying. Not historic.",
+      copy: "You may sigh once. Then suck it up and come back with something that warrants a second sentence.",
     };
   }
 
   if (score < 51) {
     return {
-      label: "Rather a lot",
-      title: "Quite a lot, actually.",
-      copy: "You may cancel one plan and become difficult to reach.",
+      label: "Grudgingly accepted",
+      title: "Fine. That was genuinely irritating.",
+      copy: "You have earned a proper sulk. Try not to turn it into a memoir.",
     };
   }
 
   return {
-    label: "Formal groan",
-    title: "An administrative failure of reality.",
-    copy: "No lessons need be learned from this.",
+    label: "Complaint sustained",
+    title: "At last, an actual problem.",
+    copy: "Finally, something worth being annoyed about. Please proceed with your entirely justified refusal to cope.",
   };
 }
 
