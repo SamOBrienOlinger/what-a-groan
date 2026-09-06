@@ -14,6 +14,8 @@ An early repository for a playful web-app concept.
 
 ## Getting started
 
+Git is required for the clone command below.
+
 Clone the workspace to inspect or develop it:
 
 ```bash
